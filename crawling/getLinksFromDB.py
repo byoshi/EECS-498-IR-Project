@@ -67,12 +67,12 @@ class WikiDB:
             if r[0] == 0:
                 titles.append(r[1])
 
-        ret = []
-        for r in titles:
-            page_id_title = self.get_page_id_from_title(r)
-            if page_id_title is not None:
-                ret.append(page_id_title)
-                # print page_id, page_title
+        ret = titles
+        # for r in titles:
+        #    page_id_title = self.get_page_id_from_title(r)
+        #    if page_id_title is not None:
+        #        ret.append(page_id_title)
+        #        # print page_id, page_title
 
         return ret
 
@@ -90,40 +90,46 @@ def crawl():
     visited = set()
     q = deque()
     start_page = "World_War_II"
-    page_id_title = db.get_page_id_from_title(start_page)
-    q.append((page_id_title[0], start_page, None, 0))
+    # page_id_title = db.get_page_id_from_title(start_page)
+    q.append((start_page, None, 0))
 
-    stop_len = 30
+    stop_len = 1000
     g_start = time.time()
     degree = 0
     while len(q) > 0 and len(visited) < stop_len and degree < 6:
         start = time.time()
-        page_id, page_title, from_id, degree = q.popleft()
+        page_title, from_id, degree = q.popleft()
 
-        # add node to page_nodes
-        if page_title not in page_nodes:
-            page_nodes.append(page_title)
+        
+        # check if page exists or is a redirect
+        page_id_title = db.get_page_id_from_title(page_title)
+        if page_id_title is not None:
+            page_id = page_id_title[0]
 
-        # get index
-        page_nodes_idx = page_nodes.index(page_title)
+            # add node to page_nodes
+            if page_title not in page_nodes:
+                page_nodes.append(page_title)
 
-        # add degree
-        if page_nodes_idx >= len(page_degree):
-            page_degree.insert(page_nodes_idx, degree)
+            # get index
+            page_nodes_idx = page_nodes.index(page_title)
 
-        # add link to page_links regardless of if we seen it, could be a reverse arrow
-        if from_id is not None:
-            page_links.append((from_id, page_nodes_idx))
+            # add degree
+            if page_nodes_idx >= len(page_degree):
+                page_degree.insert(page_nodes_idx, degree)
 
-        # don't crawl for links if we've already crawled for links
-        if page_id not in visited:
-            links = db.get_page_links(page_id)
-            visited.add(page_id)
-   
-            # links come in alphabetical order need to shuffle here
-            shuffle(links)
-            for l in links[:10]:
-                q.append((l[0], l[1], page_nodes_idx, degree + 1))
+            # add link to page_links regardless of if we seen it, could be a reverse arrow
+            if from_id is not None:
+                page_links.append((from_id, page_nodes_idx))
+
+            # don't crawl for links if we've already crawled for links
+            if page_id not in visited:
+                links = db.get_page_links(page_id)
+                visited.add(page_id)
+       
+                # links come in alphabetical order need to shuffle here
+                shuffle(links)
+                for l in links[:10]:
+                    q.append((l, page_nodes_idx, degree + 1))
 
         end = time.time()
         print len(visited), "Degree:", degree, \
