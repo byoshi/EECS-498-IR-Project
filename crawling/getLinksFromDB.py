@@ -3,6 +3,9 @@ import mysql.connector
 import time
 from Queue import Queue
 from random import shuffle
+import random
+import json
+import re
 
 class WikiDB:
     def __init__(self):
@@ -80,16 +83,19 @@ def crawl():
     links = {}
     page_nodes = []
     page_links = []
+    page_degree = []
     page_idx = 0
 
     visited = set()
     q = Queue()
-    page_id_title = db.get_page_id_from_title("Lie_to_me")
-    q.put((page_id_title[0], "Lie_to_me", None, 0))
+    start_page = "World_War_II"
+    page_id_title = db.get_page_id_from_title(start_page)
+    q.put((page_id_title[0], start_page, None, 0))
 
-    stop_len = 10
+    stop_len = 100
     g_start = time.time()
-    while not q.empty() and len(visited) < stop_len:
+    degree = 0
+    while not q.empty() and len(visited) < stop_len and degree < 6:
         start = time.time()
         page_id, page_title, from_id, degree = q.get()
 
@@ -99,6 +105,10 @@ def crawl():
 
         # get index
         page_nodes_idx = page_nodes.index(page_title)
+
+        # add degree
+        if page_nodes_idx >= len(page_degree):
+            page_degree.insert(page_nodes_idx, degree)
 
         # add link to page_links regardless of if we seen it, could be a reverse arrow
         if from_id is not None:
@@ -111,18 +121,41 @@ def crawl():
    
             # links come in alphabetical order need to shuffle here
             shuffle(links)
-            for l in links:
+            for l in links[:10]:
                 q.put((l[0], l[1], page_nodes_idx, degree + 1))
 
         end = time.time()
         print len(visited), "Degree:", degree, \
               "Num of Links:", len(links), \
               "last link:", end - start, \
+              "queue size:", q.qsize(), \
               "time left", (end - g_start)/len(visited) * stop_len
 
-    
+   
+    json_dict = {"nodes": [], "links": []}
+
+    clusters = [None]*10
+
+    for i, pn in enumerate(page_nodes):
+        cluster_idx = page_degree[i]#random.randint(0, 9)
+        c_check = clusters[cluster_idx]
+        d_temp = {"name": re.sub("_", " ", pn), "cluster": cluster_idx}
+        if c_check is None:
+            d_temp["clusterCenter"] = True
+            clusters[cluster_idx] = cluster_idx
+
+        if i == 0:
+            d_temp["root"] = True
+
+        json_dict["nodes"].append(d_temp)
+
+    for pl in page_links:
+        json_dict["links"].append({"source": pl[0], "target": pl[1]})
+
     print page_nodes
     print page_links
+    
+    print json.dumps(json_dict, indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
     crawl()
