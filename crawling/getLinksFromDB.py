@@ -2,6 +2,7 @@
 import mysql.connector
 import time
 from Queue import Queue
+from random import shuffle
 
 class WikiDB:
     def __init__(self):
@@ -76,21 +77,44 @@ def crawl():
     db = WikiDB()
     db.connect()
 
+    links = {}
+    page_nodes = []
+    page_nodes_idx = 0
+    page_links = []
+    page_idx = 0
+
     visited = set()
     q = Queue()
-    page_id_title = db.get_page_id_from_title("World_War_II")
-    q.put(page_id_title[0])
-    stop_len = 100
+    page_id_title = db.get_page_id_from_title("Lie_to_me")
+    q.put((page_id_title[0], "Lie_to_me", None))
+
+    stop_len = 10
     g_start = time.time()
     while not q.empty() and len(visited) < stop_len:
         start = time.time()
-        page_id = q.get()
+        page_id, page_title, from_id = q.get()
+
+        # add node to page_nodes
+        page_nodes.append(page_title)
+        # add link to page_links
+        if from_id is not None:
+            page_links.append((from_id, page_nodes_idx))
+
         links = db.get_page_links(page_id)
+        print len(links)
         visited.add(page_id)
+        shuffle(links)
         for l in links:
-            q.put(l[0])
+            q.put((l[0], l[1], page_nodes_idx))
+
+        # increament page_nodes index to next open slot
+        page_nodes_idx += 1
         end = time.time()
         print len(visited), "last link:", end - start, "time left", (end - g_start)/len(visited) * stop_len
+
+
+    print page_nodes
+    print page_links
 
 if __name__ == '__main__':
     crawl()
