@@ -79,40 +79,48 @@ def crawl():
 
     links = {}
     page_nodes = []
-    page_nodes_idx = 0
     page_links = []
     page_idx = 0
 
     visited = set()
     q = Queue()
     page_id_title = db.get_page_id_from_title("Lie_to_me")
-    q.put((page_id_title[0], "Lie_to_me", None))
+    q.put((page_id_title[0], "Lie_to_me", None, 0))
 
     stop_len = 10
     g_start = time.time()
     while not q.empty() and len(visited) < stop_len:
         start = time.time()
-        page_id, page_title, from_id = q.get()
+        page_id, page_title, from_id, degree = q.get()
 
         # add node to page_nodes
-        page_nodes.append(page_title)
-        # add link to page_links
+        if page_title not in page_nodes:
+            page_nodes.append(page_title)
+
+        # get index
+        page_nodes_idx = page_nodes.index(page_title)
+
+        # add link to page_links regardless of if we seen it, could be a reverse arrow
         if from_id is not None:
             page_links.append((from_id, page_nodes_idx))
 
-        links = db.get_page_links(page_id)
-        print len(links)
-        visited.add(page_id)
-        shuffle(links)
-        for l in links:
-            q.put((l[0], l[1], page_nodes_idx))
+        # don't crawl for links if we've already crawled for links
+        if page_id not in visited:
+            links = db.get_page_links(page_id)
+            visited.add(page_id)
+   
+            # links come in alphabetical order need to shuffle here
+            shuffle(links)
+            for l in links:
+                q.put((l[0], l[1], page_nodes_idx, degree + 1))
 
-        # increament page_nodes index to next open slot
-        page_nodes_idx += 1
         end = time.time()
-        print len(visited), "last link:", end - start, "time left", (end - g_start)/len(visited) * stop_len
+        print len(visited), "Degree:", degree, \
+              "Num of Links:", len(links), \
+              "last link:", end - start, \
+              "time left", (end - g_start)/len(visited) * stop_len
 
-
+    
     print page_nodes
     print page_links
 
