@@ -1,11 +1,12 @@
 #!/usr/bin/python
 import mysql.connector
 import time
-from Queue import Queue
+from collections import deque
 from random import shuffle
 import random
 import json
 import re
+import io
 
 class WikiDB:
     def __init__(self):
@@ -87,17 +88,17 @@ def crawl():
     page_idx = 0
 
     visited = set()
-    q = Queue()
+    q = deque()
     start_page = "World_War_II"
     page_id_title = db.get_page_id_from_title(start_page)
-    q.put((page_id_title[0], start_page, None, 0))
+    q.append((page_id_title[0], start_page, None, 0))
 
-    stop_len = 100
+    stop_len = 30
     g_start = time.time()
     degree = 0
-    while not q.empty() and len(visited) < stop_len and degree < 6:
+    while len(q) > 0 and len(visited) < stop_len and degree < 6:
         start = time.time()
-        page_id, page_title, from_id, degree = q.get()
+        page_id, page_title, from_id, degree = q.popleft()
 
         # add node to page_nodes
         if page_title not in page_nodes:
@@ -122,14 +123,14 @@ def crawl():
             # links come in alphabetical order need to shuffle here
             shuffle(links)
             for l in links[:10]:
-                q.put((l[0], l[1], page_nodes_idx, degree + 1))
+                q.append((l[0], l[1], page_nodes_idx, degree + 1))
 
         end = time.time()
         print len(visited), "Degree:", degree, \
               "Num of Links:", len(links), \
               "last link:", end - start, \
-              "queue size:", q.qsize(), \
-              "time left", (end - g_start)/len(visited) * stop_len
+              "queue size:", len(q), \
+              "time left", (end - g_start)/len(visited) * (stop_len - len(visited))
 
    
     json_dict = {"nodes": [], "links": []}
@@ -152,10 +153,9 @@ def crawl():
     for pl in page_links:
         json_dict["links"].append({"source": pl[0], "target": pl[1]})
 
-    print page_nodes
-    print page_links
+    outfile = io.open("out.json", "wb") 
+    outfile.write(json.dumps(json_dict, indent=4, separators=(',', ': '), ensure_ascii=False))
     
-    print json.dumps(json_dict, indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
     crawl()
