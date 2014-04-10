@@ -187,12 +187,14 @@ def tokenizeWiki(wiki_file, stopwords):
   for article in articles:
     articles_meta.append(re.split("\n", article.lstrip())[0])
 
+  article_names_file = open("article_names.txt", 'w')
   article_index = 0
   for meta in articles_meta:
     if re.search("title", meta) is not None:
       cur_title_index = meta.index("title")
       cur_title_end_index = meta.index(">")
       cur_title = meta[cur_title_index + 7:cur_title_end_index - 1]
+      article_names_file.write(cur_title + "\n");
       tf_dicts_list.append(tokenizeIndividualDocument(articles[article_index], stopwords))
       article_index += 1
 
