@@ -10,6 +10,7 @@ def bagOfWords(tf_dict_list, k_means_filename):
 		for token in tf_dict.keys():
 			if token not in all_words:
 				all_words.append(token)
+	print "Vocab size =", len(all_words)
 
 	k_means_file = open(k_means_filename, 'w')
 	file_bow = ""
