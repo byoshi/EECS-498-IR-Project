@@ -47,7 +47,7 @@ def main():
 	stopwords_file = sys.argv[2]
 	k_means_filename = sys.argv[3]
 
-	wiki_file = bz2.BZ2File(wiki_file_name, "r")
+	wiki_file = open(wiki_file_name, "r")
 	tf_dict_list = tokenizeWiki(wiki_file.read(), stopwords_file)
 	# file_to_tf_dict = {}
 	# for dirpath, dirnames, filenames in os.walk(directory):
