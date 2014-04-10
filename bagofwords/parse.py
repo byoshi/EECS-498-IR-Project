@@ -173,7 +173,8 @@ def tokenizeDocuments(directory, stopwordFilename):
 def tokenizeIndividualDocument(doc, stopwords):
   doc = removeSGML(doc)
   docTokensDict = tokenize(doc)
-  removeStopWords(docTokensDict, stopwords)
+  listOfStopwords = readStopWords(stopwords)
+  removeStopWords(docTokensDict, listOfStopwords)
   stemWords(docTokensDict)
   return docTokensDict
 
