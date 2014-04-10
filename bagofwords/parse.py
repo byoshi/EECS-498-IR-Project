@@ -65,7 +65,7 @@ def getWordsFromDictionary(dict):
 def removeStopWords(dict, stopwords):
   dictlist = getWordsFromDictionary(dict)
   for word in stopwords:
-    if word in dictlist:
+    if word in dict.keys():
       del dict[word]
 
 def expand_contractions(s):
@@ -174,7 +174,7 @@ def tokenizeDocuments(directory, stopwordFilename):
 def tokenizeIndividualDocument(doc, stopwords):
   doc = removeSGML(doc)
   docTokensDict = tokenize(doc)
-  #removeStopWords(docTokensDict, stopwords)
+  removeStopWords(docTokensDict, stopwords)
   stemWords(docTokensDict)
   return docTokensDict
 
