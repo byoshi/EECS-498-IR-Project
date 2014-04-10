@@ -4,6 +4,7 @@ from parse import tokenizeWiki
 
 def bagOfWords(tf_dict_list, k_means_filename):
 	all_words = []
+	tf_list_list = []
 
 	#Build a list of all tokens
 	for tf_dict in tf_dict_list:
@@ -32,8 +33,10 @@ def bagOfWords(tf_dict_list, k_means_filename):
 			file_bow += " "
 
 		k_means_file.write(file_bow[0:len(file_bow)-1] + "\n")
+		tf_list_list.append(file_bow[0:len(file_bow)-1] + "\n")
 		file_bow = ""
 	k_means_file.close()
+	return tf_list_list
  
 def main():
 	if len(sys.argv) != 4:
@@ -41,10 +44,11 @@ def main():
 		sys.exit(1)
 
 	wiki_file_name = sys.argv[1]
-	stopwords_file = sys.argv[2]
+	stopwords_filename = sys.argv[2]
 	k_means_filename = sys.argv[3]
 
 	wiki_file = bz2.BZ2File(wiki_file_name, "r")
+	stopwords_file = open(stopwords_filename, "r")
 	tf_dict_list = tokenizeWiki(wiki_file.read(), stopwords_file)
 	# file_to_tf_dict = {}
 	# for dirpath, dirnames, filenames in os.walk(directory):

@@ -63,7 +63,6 @@ def getWordsFromDictionary(dict):
   return dictlist
 
 def removeStopWords(dict, stopwords):
-  dictlist = getWordsFromDictionary(dict)
   for word in stopwords:
     if word in dict.keys():
       del dict[word]
