@@ -1,5 +1,6 @@
 
 import numpy
+import random
 #import PyCluster # is this available??
 
 #n obervations into k clusters
@@ -8,10 +9,20 @@ import numpy
 #Lloyd's algorithm: assignment step; update step
 
 def convert_list_to_string(coord):
-    return str(coord[0]) + ' ' + str(coord[1])
+    string = str(coord[0])
+    first = 1
+    for num in range(0, len(coord)):
+        if first == 1:
+            first = 0
+            continue
+        string = string + ' ' + str(coord[num])
+
+    return string
 
 def euclidean_dist(point1, point2):
     #dist = numpy.sqrt(numpy.sum(point1-point2)**2)
+    #GREAT DEBUG print "point1: %s point2: %s" % (point1, point2)
+
     p1 = numpy.array(point1, dtype=float)
     p2 = numpy.array(point2, dtype=float)
     dist = numpy.linalg.norm(p1-p2)
@@ -28,6 +39,26 @@ def find_closest_mean(coord, mean_values, mean_clusters):
             new_mean_index = index
 
     return new_mean_index
+
+def initial_classify(num_clusters, coordinates):
+    #initialize mean_clusters [map mean index to set of coord pairs]
+    mean_clusters = dict()
+    for index in range(0, num_clusters):
+        mean_clusters[index] = set()
+
+    #coord_classification dict [map coord to mean]
+    coord_classification = dict()
+
+    index = 0
+    #randomlly cluster vectors
+    for coord in coordinates:
+        #new_mean_index = find_closest_mean(coord, mean_values, mean_clusters)
+        new_mean_index = random.randint(0, num_clusters-1)
+        coord_classification[convert_list_to_string(coord)] = new_mean_index
+        mean_clusters[new_mean_index].add(convert_list_to_string(coord))
+        #print "converted coord to store: %s" % (convert_list_to_string(coord))
+
+    return mean_clusters, coord_classification
 
 #find num_means points that are furthest from each other (Euclidean distance)
 def initial_means(num_means, coordinates):
@@ -69,59 +100,50 @@ def classify_coords(mean_values, mean_clusters, coord_classification):
     #GREAT DEBUG print "num_changes: %d" % (num_changes)
     return num_changes
 
-def recalculate_means(mean_values, mean_clusters):
+def recalculate_means(mean_values, mean_clusters, coord_len):
 
     #for each mean
     for index in mean_clusters:
         #recalculate mean based on points in the cluster
-        sum_x = 0.
-        sum_y = 0.
+        summation = [0.] * coord_len
         for coord in mean_clusters[index]:
             coord = coord.split()
-            sum_x += float(coord[0])
-            sum_y += float(coord[1])
+            i = 0
+            for num in coord:
+                summation[i] += float(num)
+                i += 1
 
-        new_x = sum_x/len(mean_clusters[index])
-        new_y = sum_y/len(mean_clusters[index])
-        new_mean = [new_x, new_y]
-        mean_values[index] = convert_list_to_string(new_mean)
+        normalized = summation
+        if len(mean_clusters[index]) > 0:
+            i = 0
+            for sum_val in summation:
+                normalized[i] = sum_val/len(mean_clusters[index])
+                i += 1
+
+        mean_values[index] = convert_list_to_string(normalized)
+        #print "new mean: %s" % (mean_values[index])
 
     return mean_values
 
-def initial_classify(mean_values, coordinates):
-    #initialize mean_clusters [map mean index to set of coord pairs]
-    mean_clusters = dict()
-    for index in range(0, len(mean_values)):
-        mean_clusters[index] = set()
-
-    #coord_classification dict [map coord to mean]
-    coord_classification = dict()
-
-    index = 0
-    #do initial classification
-    for coord in coordinates:
-        new_mean_index = find_closest_mean(coord, mean_values, mean_clusters)
-        coord_classification[convert_list_to_string(coord)] = new_mean_index
-        mean_clusters[new_mean_index].add(convert_list_to_string(coord))
-        #print "converted coord to store: %s" % (convert_list_to_string(coord))
-
-    return mean_clusters, coord_classification
 
 
 def kmeans(num_clusters, coordinates):
     # initial means = find furthest points from each other - Euclidean distance 
-    mean_values = initial_means(num_clusters, coordinates)
-    #GREAT DEBUG print "initial means: %s %s" % (mean_values[0], mean_values[1])
-    # classify coordinates into the initial groups using means
-    mean_clusters, coord_classification = initial_classify(mean_values, coordinates)
+    #mean_values = initial_means(num_clusters, coordinates)
+    vector_len = len(coordinates[0])
+    mean_values = dict()
+    for index in range(0, num_clusters):
+        mean_values[index] = [0.] * vector_len
+    # classify coordinates into the initial groups randomly
+    mean_clusters, coord_classification = initial_classify(num_clusters, coordinates)
 
     num_changes = 1
 
     #while more than one coordinate changes clusters:
     while num_changes > 0:
         #recalculate mean values based on points in the cluster
-        mean_values = recalculate_means(mean_values, mean_clusters)
-        #GREAT DEBUG print "recalculated means: %s and %s" % (mean_values[0], mean_values[1])
+        mean_values = recalculate_means(mean_values, mean_clusters, vector_len)
+        #GREAT DEBUG print "recalculated means: %s" % (mean_values)
 
         #classify each coordinate as part of cluster with least distance to the mean
         num_changes = classify_coords(mean_values, mean_clusters, coord_classification)
@@ -132,7 +154,7 @@ def kmeans(num_clusters, coordinates):
 
 def main():
 
-    data_path = '/afs/umich.edu/user/e/m/emjansen/EECS498/coordinates.in'
+    data_path = '/afs/umich.edu/user/e/m/emjansen/EECS498/EECS-498-IR-Project/coordinates.in'
 
     num_clusters = 2
 
@@ -146,17 +168,14 @@ def main():
     #convert pairs to numpy.array(pair)
     for pair in pairs:
         coord = pair.split()
-        #print "coord: %s initial list type: " % (str(coord))
-        #print type(coord)
+        #print "coord: %s" % (str(coord))
         coordinates.append(coord)
 
     mean_values, mean_clusters, coord_to_mean = kmeans(num_clusters, coordinates)
 
     for index in mean_clusters:
         print "mean: %s" % (mean_values[index])
-        print "values: "
-        for val in mean_clusters:
-            print mean_clusters[val]
+        print "values: %s" % (mean_clusters[index])
 
 if __name__ == '__main__':
     main()
