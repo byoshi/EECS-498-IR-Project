@@ -93,7 +93,7 @@ def crawl():
     # page_id_title = db.get_page_id_from_title(start_page)
     q.append((start_page, None, 0))
 
-    stop_len = 1000
+    stop_len = 2000
     g_start = time.time()
     degree = 0
     while len(q) > 0 and len(visited) < stop_len and degree < 6:
@@ -128,16 +128,12 @@ def crawl():
        
                 # links come in alphabetical order need to shuffle here
                 shuffle(links)
-                for l in links[:10]:
+                for l in links:#[:10]:
                     q.append((l, page_nodes_idx, degree + 1))
 
         end = time.time()
-        print len(visited), "Degree:", degree, \
-              "Num of Links:", len(links), \
-              "last link:", end - start, \
-              "queue size:", len(q), \
-              "time left", (end - g_start)/len(visited) * (stop_len - len(visited))
-
+        print "Links: {0:5} Degree: {1:2} Num_Links: {2:5} Last (s): {3:8.5f} Q size: {4:6}, Time left: {5:10.5f}".format( \
+            len(visited), degree, len(links), end - start, len(q), (end - g_start)/len(visited) * (stop_len - len(visited)))
    
     json_dict = {"nodes": [], "links": []}
 
@@ -160,8 +156,14 @@ def crawl():
         json_dict["links"].append({"source": pl[0], "target": pl[1]})
 
     outfile = io.open("out.json", "wb") 
-    outfile.write(json.dumps(json_dict, indent=4, separators=(',', ': '), ensure_ascii=False))
+    outfile.write(json.dumps(json_dict, ensure_ascii=False))
     
+
+    articlesToGetFile = open("article", "w")
+    for pn in page_nodes:
+        articlesToGetFile.write(pn + "\n")
+
+    articlesToGetFile.close()
 
 if __name__ == '__main__':
     crawl()
