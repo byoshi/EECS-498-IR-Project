@@ -179,7 +179,7 @@ def tokenizeIndividualDocument(doc, stopwords):
   return docTokensDict
 
 def tokenizeWiki(wiki_file, stopwords):
-  tf_dicts_list = []
+  doc_title_to_tf_dicts = {}
   articles = re.split("</doc>", wiki_file)
   articles_meta = []
   
@@ -193,10 +193,10 @@ def tokenizeWiki(wiki_file, stopwords):
       cur_title_index = meta.index("title")
       cur_title_end_index = meta.index(">")
       cur_title = meta[cur_title_index + 7:cur_title_end_index - 1]
-      tf_dicts_list.append(tokenizeIndividualDocument(articles[article_index], stopwords))
+      doc_title_to_tf_dicts[cur_title] = tokenizeIndividualDocument(articles[article_index], stopwords)
       article_index += 1
 
-  return tf_dicts_list
+  return doc_title_to_tf_dicts
 
 if __name__ == '__main__':
   directory = "/afs/umich.edu/user/b/y/byoshi/eecs498/hw2/cranfieldDocs/"#raw_input("Enter cranfieldDocs directory path: ")
