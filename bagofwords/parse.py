@@ -6,6 +6,7 @@ import os.path
 import string
 from stemmer import PorterStemmer
 import collections
+from math import log10
 
 all_words = []
 all_words_set = set()
@@ -197,6 +198,18 @@ def tokenizeWiki(wiki_file, stopwords):
       article_names_file.write(cur_title + "\n");
       tf_dicts_list.append(tokenizeIndividualDocument(articles[article_index], stopwords))
       article_index += 1
+
+  doc_frequency = {}
+  for tf_dict in tf_dicts_list:
+    for term in tf_dict.keys():
+      if term in doc_frequency.keys():
+        doc_frequency[term] += 1
+      else:
+        doc_frequency[term] = 1
+
+  for tf_dict in tf_dicts_list:
+    for term, tf in tf_dict.iteritems():
+      tf_dict[term] = tf * log10(article_index/doc_frequency[term])
 
   return tf_dicts_list
 
