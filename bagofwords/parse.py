@@ -168,7 +168,7 @@ def tokenizeDocuments(directory, stopwordFilename):
   
   listOfStopwords = readStopWords(stopwordFilename)
   removeStopWords(allTokensDict, listOfStopwords)
-  stemWords(allTokensDict)
+  # stemWords(allTokensDict)
   return allTokensDict
 
 def tokenizeIndividualDocument(doc, stopwords):
@@ -176,7 +176,7 @@ def tokenizeIndividualDocument(doc, stopwords):
   docTokensDict = tokenize(doc)
   listOfStopwords = readStopWords(stopwords)
   removeStopWords(docTokensDict, listOfStopwords)
-  stemWords(docTokensDict)
+  # stemWords(docTokensDict)
   return docTokensDict
 
 def tokenizeWiki(wiki_file, stopwords):
@@ -190,28 +190,46 @@ def tokenizeWiki(wiki_file, stopwords):
 
   article_names_file = open("article_names.txt", 'w')
   article_index = 0
+  df_terms = []
   for meta in articles_meta:
     if re.search("title", meta) is not None:
       cur_title_index = meta.index("title")
       cur_title_end_index = meta.index(">")
       cur_title = meta[cur_title_index + 7:cur_title_end_index - 1]
       article_names_file.write(cur_title + "\n");
-      tf_dicts_list.append(tokenizeIndividualDocument(articles[article_index], stopwords))
+      doc_tf_dict = tokenizeIndividualDocument(articles[article_index], stopwords)
+      tf_dicts_list.append(doc_tf_dict)
+      df_terms.extend(doc_tf_dict.keys())
       article_index += 1
+      print "Processing", article_index, "/", len(articles_meta) - 1
 
-  doc_frequency = {}
-  for tf_dict in tf_dicts_list:
-    for term in tf_dict.keys():
-      if term in doc_frequency.keys():
-        doc_frequency[term] += 1
-      else:
-        doc_frequency[term] = 1
+  print "Tokenization...Done"
 
+  doc_frequency = collections.Counter(df_terms)
+
+  # doc_frequency = {}
+  # tf_dict_idx = 1
+  # for tf_dict in tf_dicts_list:
+  #   for term in tf_dict.keys():
+  #     if term in doc_frequency.keys():
+  #       doc_frequency[term] += 1
+  #     else:
+  #       doc_frequency[term] = 1
+  #   print "df calc:", tf_dict_idx, "/", len(tf_dicts_list)
+  #   tf_dict_idx += 1
+
+  print "df...Done"
+
+  i = 0
   for tf_dict in tf_dicts_list:
     for term, tf in tf_dict.iteritems():
-      tf_dict[term] = tf * log10(article_index/doc_frequency[term])
+      tf_dict[term] = tf * log10(article_index/doc_frequency[term])\
 
-  return tf_dicts_list
+    print "Processing", i, "/", len(tf_dicts_list)
+    i += 1
+
+  print "tfidf...Done"
+  return tf_dicts_list, doc_frequency.keys()
 
 if __name__ == '__main__':
   directory = "/afs/umich.edu/user/b/y/byoshi/eecs498/hw2/cranfieldDocs/"#raw_input("Enter cranfieldDocs directory path: ")
