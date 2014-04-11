@@ -60,6 +60,23 @@ class WikiDB:
 
         return ret
 
+    def get_in_links(self, title):
+        self.cursor.execute("select pl_from from pagelinks where pl_namespace=0 and pl_title=%s", (title, ))
+        ids = []
+        for r in self.cursor:
+            ids.append(r)
+
+        return ids
+
+
+    def get_num_out_links(self, id):
+        self.cursor.execute("select count(*) from pagelinks where pl_from=%s", (id, ))
+        ret = 0
+        for r in self.cursor:
+            ret = r
+
+        return ret[0]
+
     def get_page_links(self, id):
         self.cursor.execute("select pl_namespace, pl_title from pagelinks where pl_from=%s", (id, ))
         titles = []
@@ -83,6 +100,7 @@ def crawl():
 
     links = {}
     page_nodes = []
+    page_ids = []
     page_links = []
     page_degree = []
     page_idx = 0
@@ -93,7 +111,7 @@ def crawl():
     # page_id_title = db.get_page_id_from_title(start_page)
     q.append((start_page, None, 0))
 
-    stop_len = 2000
+    stop_len = 10
     g_start = time.time()
     degree = 0
     while len(q) > 0 and len(visited) < stop_len and degree < 6:
@@ -109,6 +127,7 @@ def crawl():
             # add node to page_nodes
             if page_title not in page_nodes:
                 page_nodes.append(page_title)
+                page_ids.append(page_id)
 
             # get index
             page_nodes_idx = page_nodes.index(page_title)
@@ -164,6 +183,20 @@ def crawl():
         articlesToGetFile.write(pn + "\n")
 
     articlesToGetFile.close()
+
+    # page rank estimate
+    page_ranks = [0]*len(page_nodes)
+    for i, pn in enumerate(page_nodes):
+        print pn
+        InLinks = db.get_in_links(pn)
+        pg = 0
+        for l_id in InLinks:
+            numOutLinks = db.get_num_out_links(l_id[0])
+            pg += 1.0/numOutLinks
+        page_ranks[i] = pg
+
+    for i, pn in enumerate(page_nodes):
+        print pn, page_ranks[i]
 
 if __name__ == '__main__':
     crawl()
