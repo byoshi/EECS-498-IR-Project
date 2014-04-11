@@ -187,12 +187,12 @@ def crawl():
     # page rank estimate
     page_ranks = [0]*len(page_nodes)
     for i, pn in enumerate(page_nodes):
-        print pn
         InLinks = db.get_in_links(pn)
-        pg = 0
-        for l_id in InLinks:
-            numOutLinks = db.get_num_out_links(l_id[0])
-            pg += 1.0/numOutLinks
+        print pn, InLinks
+        pg = len(InLinks)
+        # for l_id in InLinks:
+        #     numOutLinks = db.get_num_out_links(l_id[0])
+        #     pg += 1.0/numOutLinks
         page_ranks[i] = pg
 
     for i, pn in enumerate(page_nodes):
