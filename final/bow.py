@@ -2,9 +2,9 @@ import collections, re, sys, os, bz2
 from parse import tokenizeWiki
 
 
-def bagOfWords(tf_dict_list, k_means_filename, all_words):
+def bagOfWords(tf_dict_list, all_words):
 	print "Vocab size =", len(all_words)
-	tf_list_list = [[0]*len(all_words)]*len(tf_dict_list)
+	tf_list_list = [[0]*len(all_words) for i in range(len(tf_dict_list))]
 
 	# k_means_file = open(k_means_filename, 'w')
 	# file_bow = ""
@@ -20,6 +20,7 @@ def bagOfWords(tf_dict_list, k_means_filename, all_words):
 	i = 0
 	for tf_dict in tf_dict_list:
 		j = 0
+		k = 0
 		for word in all_words:
 			if word in tf_dict:
 				# k_means_file.write(str(tf_dict[word]))
@@ -28,6 +29,7 @@ def bagOfWords(tf_dict_list, k_means_filename, all_words):
 			else:
 				# k_means_file.write('0')
 				tf_list_list[i][j] = 0
+				k += 1
 				# file_bow += "0"
 			# file_bow += " "
 
@@ -43,7 +45,7 @@ def bagOfWords(tf_dict_list, k_means_filename, all_words):
 		# k_means_file.write("%d" % tf_list_list[i])
 		# file_bow = ""
 		i += 1
-		print "Saving vectors", i, "/", len(tf_dict_list)
+		print "Saving vectors", i, "/", len(tf_dict_list), 41287 - k
 
 	# k_means_file.close()
 	return tf_list_list

@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import sys
 import re
 from random import randint
 import os.path
 import string
-from stemmer import PorterStemmer
 import collections
+from math import log10
 
 all_words = []
 all_words_set = set()
@@ -55,6 +55,7 @@ def readStopWords(filename):
   text = stopwords_file.read()
   return text.split()
 
+
 def getWordsFromDictionary(dict):
   dictlist = []
   for key, value in dict.iteritems():
@@ -62,19 +63,22 @@ def getWordsFromDictionary(dict):
 
   return dictlist
 
+
 def removeStopWords(dict, stopwords):
-  dictlist = getWordsFromDictionary(dict)
   for word in stopwords:
-    if word in dictlist:
+    if word in dict.keys():
       del dict[word]
+
 
 def expand_contractions(s):
   def replace(match):
     return contractions[match.group(0)]
   return contractions_expr.sub(replace, s)
 
+
 def removeSGML(text):
   return re.sub('<[^>]*>', '', text)
+
 
 def tokenize(text):
   tokenDict = {}
@@ -127,6 +131,7 @@ def tokenize(text):
       tokenDict[word] = 1
   return tokenDict
 
+
 def getSubset(subset_num, subset_size):
   subset_dict = {}
   for i in range(subset_size):
@@ -139,17 +144,6 @@ def getSubset(subset_num, subset_size):
   print "V value of subset", subset_num, ":", len(subset_dict)
   print "n value of subset", subset_num, ":", subset_size
 
-def stemWords(dict):
-  ps = PorterStemmer()
-  dictlist = getWordsFromDictionary(dict)
-  for word in dictlist:
-    stemmed_word = ps.stem(word, 0, len(word)-1)
-    if word != stemmed_word:
-      if stemmed_word in dict:
-        dict[stemmed_word] += dict[word]
-      else:
-        dict[stemmed_word] = dict[word]
-      del dict[word]
 
 def updateDict(dict, updatingDict):
   for key, value in dict.iteritems():
@@ -158,28 +152,17 @@ def updateDict(dict, updatingDict):
     else:
       updatingDict[key] = value
 
-def tokenizeDocuments(directory, stopwordFilename):
-  allTokensDict = {}
-  for dirpath, dirnames, filenames in os.walk(directory):
-    for f in filenames:
-      text = removeSGML(directory + f)
-      dictOfTokens = tokenize(text)
-      updateDict(dictOfTokens, allTokensDict)
-  
-  listOfStopwords = readStopWords(stopwordFilename)
-  removeStopWords(allTokensDict, listOfStopwords)
-  stemWords(allTokensDict)
-  return allTokensDict
 
 def tokenizeIndividualDocument(doc, stopwords):
   doc = removeSGML(doc)
   docTokensDict = tokenize(doc)
-  removeStopWords(docTokensDict, stopwords)
-  stemWords(docTokensDict)
+  listOfStopwords = readStopWords(stopwords)
+  removeStopWords(docTokensDict, listOfStopwords)
   return docTokensDict
 
+
 def tokenizeWiki(wiki_file, stopwords):
-  doc_title_to_tf_dicts = {}
+  tf_dicts_list = []
   articles = re.split("</doc>", wiki_file)
   articles_meta = []
   
@@ -187,16 +170,48 @@ def tokenizeWiki(wiki_file, stopwords):
   for article in articles:
     articles_meta.append(re.split("\n", article.lstrip())[0])
 
+  article_names_file = open("article_names.txt", 'w')
   article_index = 0
+  df_terms = []
   for meta in articles_meta:
     if re.search("title", meta) is not None:
       cur_title_index = meta.index("title")
       cur_title_end_index = meta.index(">")
       cur_title = meta[cur_title_index + 7:cur_title_end_index - 1]
-      doc_title_to_tf_dicts[cur_title] = tokenizeIndividualDocument(articles[article_index], stopwords)
+      article_names_file.write(cur_title + "\n");
+      doc_tf_dict = tokenizeIndividualDocument(articles[article_index], stopwords)
+      tf_dicts_list.append(doc_tf_dict)
+      df_terms.extend(doc_tf_dict.keys())
       article_index += 1
+      print "Processing", article_index, "/", len(articles_meta) - 1
 
-  return doc_title_to_tf_dicts
+  print "Tokenization...Done"
+
+  doc_frequency = collections.Counter(df_terms)
+
+  # doc_frequency = {}
+  # tf_dict_idx = 1
+  # for tf_dict in tf_dicts_list:
+  #   for term in tf_dict.keys():
+  #     if term in doc_frequency.keys():
+  #       doc_frequency[term] += 1
+  #     else:
+  #       doc_frequency[term] = 1
+  #   print "df calc:", tf_dict_idx, "/", len(tf_dicts_list)
+  #   tf_dict_idx += 1
+
+  print "df...Done"
+
+  i = 0
+  for tf_dict in tf_dicts_list:
+    for term, tf in tf_dict.iteritems():
+      tf_dict[term] = tf * log10(article_index/doc_frequency[term])\
+
+    print "Processing", i, "/", len(tf_dicts_list)
+    i += 1
+
+  print "tfidf...Done"
+  return tf_dicts_list, doc_frequency.keys()
 
 if __name__ == '__main__':
   directory = "/afs/umich.edu/user/b/y/byoshi/eecs498/hw2/cranfieldDocs/"#raw_input("Enter cranfieldDocs directory path: ")
