@@ -67,6 +67,15 @@ class WikiDB:
             ids.append(r)
 
         return ids
+    
+    
+    def get_num_in_links(self, title):
+        self.cursor.execute("select count(*) from pagelinks where pl_namespace=0 and pl_title=%s", (title, ))
+        ret = 0
+        for r in self.cursor:
+            ret = r
+
+        return ret[0]
 
 
     def get_num_out_links(self, id):
@@ -111,7 +120,7 @@ def crawl():
     # page_id_title = db.get_page_id_from_title(start_page)
     q.append((start_page, None, 0))
 
-    stop_len = 10
+    stop_len = 500
     g_start = time.time()
     degree = 0
     while len(q) > 0 and len(visited) < stop_len and degree < 6:
@@ -178,7 +187,7 @@ def crawl():
     outfile.write(json.dumps(json_dict, ensure_ascii=False))
     
 
-    articlesToGetFile = open("article", "w")
+    articlesToGetFile = open("articles", "w")
     for pn in page_nodes:
         articlesToGetFile.write(pn + "\n")
 
@@ -187,16 +196,26 @@ def crawl():
     # page rank estimate
     page_ranks = [0]*len(page_nodes)
     for i, pn in enumerate(page_nodes):
-        InLinks = db.get_in_links(pn)
-        print pn, len(InLinks)
-        pg = len(InLinks)
+        NumInLinks = db.get_num_in_links(pn)
+        # print pn, NumInLinks
+        pr = NumInLinks
         # for l_id in InLinks:
         #     numOutLinks = db.get_num_out_links(l_id[0])
         #     pg += 1.0/numOutLinks
-        page_ranks[i] = pg
+        page_ranks[i] = pr
 
+    sort_pr = []
+    pageRankFile = open("pagerank", "w")
     for i, pn in enumerate(page_nodes):
-        print pn, page_ranks[i]
+        # print pn, page_ranks[i]
+        sort_pr.append((pn, page_ranks[i]))
+        pageRankFile.write(str(page_ranks[i]) + "\n")
+
+    pageRankFile.close()
+
+    sort_pr.sort(key=lambda tup: tup[1], reverse=True)
+    for l in sort_pr[:10]:
+        print l
 
 if __name__ == '__main__':
     crawl()
