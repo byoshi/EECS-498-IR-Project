@@ -14,7 +14,10 @@ def build_tree(articles, rankings, links):
         #find a root node - high ranking with no articles ranked higher
         highest_rank_index = rankings[index]
 
-        to_links = links[str(highest_rank_index[1])]
+        if str(highest_rank_index[1]) in links:
+            to_links = links[str(highest_rank_index[1])]
+        else:
+            to_links = set()
 
         print "Link to classify: ", highest_rank_index[1]
 
@@ -23,13 +26,13 @@ def build_tree(articles, rankings, links):
         for tree in trees.values():
             for to_link_index in to_links:
                 if articles[int(to_link_index)] in tree:
-                    print '==== LINK FOUND! ========'
+                    print '==== LINK FOUND! ======== ', articles[int(to_link_index)]
                     node_inserted = True
 
                     #TODO this is broken and results in infinite recursion
                     tree.create_node(highest_rank_index[1], articles[highest_rank_index[1]], parent = articles[int(to_link_index)])
-
-                    tree.show(0)
+                    break;
+                    #tree.show(0)
 
 
         if node_inserted == False:
@@ -43,7 +46,7 @@ def build_tree(articles, rankings, links):
         #EXAMPLE trees[0].create_node("tree0", "tree0")  # root node
         #EXAMPLE trees[0].create_node("Jane", "jane", parent = "tree0")
 
-        trees[0].show(0)
+        #trees[0].show(0)
 
     return trees
 
@@ -90,9 +93,13 @@ def run():
 
     print '======== Trees ==========='
 
+    (_ROOT, _DEPTH, _WIDTH) = range(3)
+
     for index in range(0, len(trees)):
         print 'tree num: %s root: %s' % (index, trees[index].get_index(0))
         trees[index].show(0)
+        for node in trees[index].expand_tree("tree" + str(index), mode=_WIDTH):
+            print(node)
 
 
 if __name__ == '__main__':
