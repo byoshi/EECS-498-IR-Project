@@ -16,17 +16,20 @@ def build_tree(articles, rankings, links):
 
         to_links = links[str(highest_rank_index[1])]
 
+        print "Link to classify: ", highest_rank_index[1]
+
         node_inserted = False
 
-        for tree_index in trees:
+        for tree in trees.values():
             for to_link_index in to_links:
-                if articles[int(to_link_index)] in trees[tree_index]:
+                if articles[int(to_link_index)] in tree:
                     print '==== LINK FOUND! ========'
                     node_inserted = True
-                    break #TODO remove to test
 
                     #TODO this is broken and results in infinite recursion
-                    trees[tree_index].create_node(highest_rank_index[1], articles[highest_rank_index[1]], parent = to_link_index)
+                    tree.create_node(highest_rank_index[1], articles[highest_rank_index[1]], parent = articles[int(to_link_index)])
+
+                    tree.show(0)
 
 
         if node_inserted == False:
