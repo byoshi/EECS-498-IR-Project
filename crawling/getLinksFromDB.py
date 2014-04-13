@@ -199,8 +199,13 @@ def crawl():
 
         json_dict["nodes"].append(d_temp)
 
+    links_file = open("links", "w")
+
     for pl in page_links:
         json_dict["links"].append({"source": pl[0], "target": pl[1]})
+        links_file.write(str(pl[0]) + " " + str(pl[1]) + "\n")
+
+    links_file.close()
 
     outfile = io.open("out.json", "wb") 
     outfile.write(json.dumps(json_dict, ensure_ascii=False))
