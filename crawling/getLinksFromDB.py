@@ -174,10 +174,9 @@ def crawl():
         for l in links:
             try:
                 l_idx = page_nodes.index(l)
-                l_id = page_ids[l_idx]
                 # print page_nodes[page_ids.index(pi)], l
                 count += 1
-                page_links.append((pi, l_id))
+                page_links.append((i, l_idx))
             except:
                 pass
         end = time.time()
@@ -202,7 +201,7 @@ def crawl():
     links_file = open("links", "w")
 
     for pl in page_links:
-        json_dict["links"].append({"source": pl[0], "target": pl[1]})
+        json_dict["links"].append({"source": pl[0], "target": pl[1], "weight": 1})
         links_file.write(str(pl[0]) + " " + str(pl[1]) + "\n")
 
     links_file.close()
