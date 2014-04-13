@@ -177,7 +177,7 @@ def crawl():
                 l_id = page_ids[l_idx]
                 # print page_nodes[page_ids.index(pi)], l
                 count += 1
-                links.append((pi, l_id))
+                page_links.append((pi, l_id))
             except:
                 pass
         end = time.time()
@@ -185,7 +185,7 @@ def crawl():
             count, end - start, (end - g_start)/(i + 1) * (len(page_ids) - i - 1))
 
     clusters = [None]*10
-
+    
     for i, pn in enumerate(page_nodes):
         cluster_idx = page_degree[i]#random.randint(0, 9)
         c_check = clusters[cluster_idx]
@@ -218,8 +218,10 @@ def crawl():
     articlesToGetFile.close()
 
     # page rank estimate
+    g_start = time.time()
     page_ranks = [0]*len(page_nodes)
     for i, pn in enumerate(page_nodes):
+        start = time.time()
         NumInLinks = db.get_num_in_links(pn)
         # print pn, NumInLinks
         pr = NumInLinks
@@ -227,6 +229,9 @@ def crawl():
         #     numOutLinks = db.get_num_out_links(l_id[0])
         #     pg += 1.0/numOutLinks
         page_ranks[i] = pr
+        end = time.time()
+        print "Last (s): {0:8.5f} Time left: {1:10.5f}".format( \
+            end - start, (end - g_start)/(i + 1) * (len(page_nodes) - i - 1))
 
     sort_pr = []
     pageRankFile = open("pagerank", "w")
@@ -236,10 +241,6 @@ def crawl():
         pageRankFile.write(str(page_ranks[i]) + "\n")
 
     pageRankFile.close()
-
-    sort_pr.sort(key=lambda tup: tup[1], reverse=True)
-    for l in sort_pr[:10]:
-        print l
 
 if __name__ == '__main__':
     crawl()
