@@ -152,6 +152,7 @@ def crawl():
             # don't crawl for links if we've already crawled for links
             if page_id not in visited:
                 links = db.get_page_links(page_id)
+                
                 visited.add(page_id)
        
                 # links come in alphabetical order need to shuffle here
@@ -164,6 +165,24 @@ def crawl():
             len(visited), degree, len(links), end - start, len(q), (end - g_start)/len(visited) * (stop_len - len(visited)))
    
     json_dict = {"nodes": [], "links": []}
+
+    g_start = time.time()
+    for i, pi in enumerate(page_ids):
+        start = time.time()
+        links = db.get_page_links(pi)
+        count = 0
+        for l in links:
+            try:
+                l_idx = page_nodes.index(l)
+                l_id = page_ids[l_idx]
+                # print page_nodes[page_ids.index(pi)], l
+                count += 1
+                links.append((pi, l_id))
+            except:
+                pass
+        end = time.time()
+        print "Added Links: {0:5} Last (s): {1:8.5f} Time left: {2:10.5f}".format( \
+            count, end - start, (end - g_start)/(i + 1) * (len(page_ids) - i - 1))
 
     clusters = [None]*10
 
