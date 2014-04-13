@@ -79,6 +79,20 @@ class Tree:
 
         return node
 
+    def get_roots_of_node(self, ni):
+        d = deque()
+        d.append(ni)
+        roots = []
+
+        while len(d) > 0:
+            if ni in self.roots:
+                if ni not in roots:
+                    roots.append(ni)
+            node = self.get_node(ni)      
+            for p in node.get_parents():
+                d.append(p)
+        return roots
+
     def get_roots(self):
         return self.roots
 
@@ -97,6 +111,22 @@ class Tree:
             for ci in node.get_children():
                 d.append(ci)
 
+    def show_recursive(self):
+        for ri in self.get_roots():
+            self.show_recursive_helper(ri)
+
+    def show_recursive_helper(self, ni):
+        node = self.get_node(ni)
+        if len(node.get_children()) == 0:
+            print "\t"*node.get_degree(), node.value
+
+        i = 0
+        for ci in node.get_children():
+            if i == 0:
+                print "\t"*node.get_degree(), node.value
+            self.show_recursive_helper(ci)
+            i += 1
+
     def __getitem__(self, key):
         return self.nodes[key]
 
@@ -107,8 +137,8 @@ class Tree:
         return key in self.nodes
 
 if __name__ == "__main__":
-
     tree = Tree()
+    tree.add_node("Bruno", "bruno")
     tree.add_node("Harry", "harry")  # root node
     tree.add_node("Jane", "jane", "Harry")
     tree.add_node("Bill", "bill", "Harry")
@@ -118,7 +148,8 @@ if __name__ == "__main__":
     tree.add_node("Mary", "mary", "Diane")
     tree.add_node("Jill", "jill", "George")
     tree.add_node("Carol", "carol", "Jill")
+    tree.add_node("Carol", "carol", "Bruno")
     tree.add_node("Grace", "grace", "Bill")
     tree.add_node("Mark", "mark", "Jane")
 
-    tree.show()
+    tree.show_recursive()
