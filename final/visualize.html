@@ -30,13 +30,51 @@
   <div id="tags" style="width:100%;height:500px;"></div>
   <script type="text/javascript">
     
-    var w = 100000, h = 20000;
+    var w = 1000, h = 2000;
+    var width = w, height = h;
     var fill = d3.scale.category20();
     
-    var vis = d3.select('#tags')
-      .append('svg:svg')
-        .attr('width', w)
-        .attr('height', h);
+var scaleFactor = 1;
+var translation = [0,0];
+var scaleExtent = [0.01, 100000000];
+
+/*** Configure zoom behaviour ***/
+var zoomer = d3.behavior.zoom()
+.scaleExtent(scaleExtent)
+//allow 10 times zoom in or out
+.on("zoom", zoom);
+//define the event handler function
+function zoom() {
+    // console.log("zoom", d3.event.translate, d3.event.scale);
+    scaleFactor = d3.event.scale;
+    translation = d3.event.translate;
+    //update();
+    tick(); //update positions
+}
+
+/** Initialize SVG ***/
+var graph = d3.select(".intgraph").append("svg:svg")
+              .attr("width", width)
+              .attr("height", height)
+              .append("g")
+              .attr("class", "graph")
+              .call(zoomer); //Attach zoom behaviour.
+
+// Add a transparent background rectangle to catch
+// mouse events for the zoom behaviour.
+// Note that the rectangle must be inside the element (graph)
+// which has the zoom behaviour attached, but must be *outside*
+// the group that is going to be transformed.
+var rect = graph.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                //.style("fill", "none") 
+                //make transparent (vs black if commented-out)
+                .style("pointer-events", "none");  
+                //respond to mouse, even when transparent
+
+var vis = graph.append("svg:g")
+               .attr("class", "plotting-area");
     
     json = { 
       "nodes": [ 
