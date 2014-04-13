@@ -152,6 +152,7 @@ def crawl():
             # don't crawl for links if we've already crawled for links
             if page_id not in visited:
                 links = db.get_page_links(page_id)
+                
                 visited.add(page_id)
        
                 # links come in alphabetical order need to shuffle here
@@ -165,8 +166,25 @@ def crawl():
    
     json_dict = {"nodes": [], "links": []}
 
-    clusters = [None]*10
+    g_start = time.time()
+    for i, pi in enumerate(page_ids):
+        start = time.time()
+        links = db.get_page_links(pi)
+        count = 0
+        for l in links:
+            try:
+                l_idx = page_nodes.index(l)
+                # print page_nodes[page_ids.index(pi)], l
+                count += 1
+                page_links.append((i, l_idx))
+            except:
+                pass
+        end = time.time()
+        print "Added Links: {0:5} Last (s): {1:8.5f} Time left: {2:10.5f}".format( \
+            count, end - start, (end - g_start)/(i + 1) * (len(page_ids) - i - 1))
 
+    clusters = [None]*10
+    
     for i, pn in enumerate(page_nodes):
         cluster_idx = page_degree[i]#random.randint(0, 9)
         c_check = clusters[cluster_idx]
@@ -183,7 +201,7 @@ def crawl():
     links_file = open("links", "w")
 
     for pl in page_links:
-        json_dict["links"].append({"source": pl[0], "target": pl[1]})
+        json_dict["links"].append({"source": pl[0], "target": pl[1], "weight": 1})
         links_file.write(str(pl[0]) + " " + str(pl[1]) + "\n")
 
     links_file.close()
@@ -199,8 +217,10 @@ def crawl():
     articlesToGetFile.close()
 
     # page rank estimate
+    g_start = time.time()
     page_ranks = [0]*len(page_nodes)
     for i, pn in enumerate(page_nodes):
+        start = time.time()
         NumInLinks = db.get_num_in_links(pn)
         # print pn, NumInLinks
         pr = NumInLinks
@@ -208,6 +228,9 @@ def crawl():
         #     numOutLinks = db.get_num_out_links(l_id[0])
         #     pg += 1.0/numOutLinks
         page_ranks[i] = pr
+        end = time.time()
+        print "Last (s): {0:8.5f} Time left: {1:10.5f}".format( \
+            end - start, (end - g_start)/(i + 1) * (len(page_nodes) - i - 1))
 
     sort_pr = []
     pageRankFile = open("pagerank", "w")
@@ -217,10 +240,6 @@ def crawl():
         pageRankFile.write(str(page_ranks[i]) + "\n")
 
     pageRankFile.close()
-
-    sort_pr.sort(key=lambda tup: tup[1], reverse=True)
-    for l in sort_pr[:10]:
-        print l
 
 if __name__ == '__main__':
     crawl()
