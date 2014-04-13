@@ -128,7 +128,7 @@ class Tree:
             d.append(ri)
 
         while len(d) > 0:
-            ni = d.popleft()
+            ni = d.pop()
             node = self.get_node(ni)
             print "\t"*node.get_degree(), node.value
             for ci in node.get_children():
