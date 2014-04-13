@@ -173,12 +173,14 @@ def tokenizeWiki(wiki_file, stopwords):
   article_names_file = open("article_names.txt", 'w')
   article_index = 0
   df_terms = []
+  names = []
   for meta in articles_meta:
     if re.search("title", meta) is not None:
       cur_title_index = meta.index("title")
       cur_title_end_index = meta.index(">")
       cur_title = meta[cur_title_index + 7:cur_title_end_index - 1]
       article_names_file.write(cur_title + "\n");
+      names.append(re.sub(" ", "_", cur_title))
       doc_tf_dict = tokenizeIndividualDocument(articles[article_index], stopwords)
       tf_dicts_list.append(doc_tf_dict)
       df_terms.extend(doc_tf_dict.keys())
@@ -211,7 +213,7 @@ def tokenizeWiki(wiki_file, stopwords):
     i += 1
 
   print "tfidf...Done"
-  return tf_dicts_list, doc_frequency.keys()
+  return tf_dicts_list, doc_frequency.keys(), names
 
 if __name__ == '__main__':
   directory = "/afs/umich.edu/user/b/y/byoshi/eecs498/hw2/cranfieldDocs/"#raw_input("Enter cranfieldDocs directory path: ")

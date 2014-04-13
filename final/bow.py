@@ -45,7 +45,7 @@ def bagOfWords(tf_dict_list, all_words):
 		# k_means_file.write("%d" % tf_list_list[i])
 		# file_bow = ""
 		i += 1
-		print "Saving vectors", i, "/", len(tf_dict_list), 41287 - k
+		print "Saving vectors", i, "/", len(tf_dict_list), len(all_words) - k
 
 	# k_means_file.close()
 	return tf_list_list
