@@ -21,10 +21,11 @@ class Node:
         self.degree = degree
 
     def add_parents(self, parents):
-        if type(parents) is not list:
-            self.parents.append(parents)
-        else:
-            self.parents.extend(parents)
+        if parents is not None:
+            if type(parents) is not list:
+                self.parents.append(parents)
+            else:
+                self.parents.extend(parents)
 
     def add_child(self, node_id):
         self.children.append(node_id)
@@ -56,41 +57,63 @@ class Tree:
         return index
 
     def add_node(self, key, value, parents=None, degree=0):
-        if parents is None:
-            degree = 0
-        else:
+        if key in self.nodes:
+            node = self.nodes[key]
             if type(parents) is not list:
-                degree = self.nodes[parents].get_degree() + 1
+                node.add_parents(parents)
+                self.nodes[parents].add_child(key)
             else:
-                max_deg = 0;
                 for p in parents:
-                    if self.nodes[p].get_degree() > max_deg:
-                        max_deg = p.get_degree()
-                degree = max_deg + 1
-
-        node = Node(value, parents, degree)
-        self.nodes[key] = node
-
-        if parents is None:
-            self.roots[key] = node
-        else:
+                    node.add_parents(p)
+                    self.nodes[p].add_child(key)  
+            max_deg = 0;
             for p in node.get_parents():
-                self.nodes[p].add_child(key)
+                if self.nodes[p].get_degree() > max_deg:
+                    max_deg = self.nodes[p].get_degree()
+            degree = max_deg + 1
+            node.degree = degree
+        else:
+            if parents is None:
+                degree = 0
+            else:
+                if type(parents) is not list:
+                    degree = self.nodes[parents].get_degree() + 1
+                else:
+                    max_deg = 0;
+                    for p in parents:
+                        if self.nodes[p].get_degree() > max_deg:
+                            max_deg = p.get_degree()
+                    degree = max_deg + 1
+
+            node = Node(value, parents, degree)
+            self.nodes[key] = node
+
+            if parents is None:
+                self.roots[key] = node
+            else:
+                for p in node.get_parents():
+                    self.nodes[p].add_child(key)
 
         return node
 
-    def get_roots_of_node(self, ni):
+    def get_roots_of_nodes(self, ni):
         d = deque()
-        d.append(ni)
+        if type(ni) is not list:
+            d.append(ni)
+        else:
+            for nii in ni:
+                d.append(nii)
         roots = []
 
         while len(d) > 0:
-            if ni in self.roots:
-                if ni not in roots:
-                    roots.append(ni)
-            node = self.get_node(ni)      
+            nii = d.popleft()
+            if nii in self.roots:
+                if nii not in roots:
+                    roots.append(nii)
+            node = self.get_node(nii)      
             for p in node.get_parents():
-                d.append(p)
+                if p is not None:
+                    d.append(p)
         return roots
 
     def get_roots(self):
@@ -138,7 +161,10 @@ class Tree:
 
 if __name__ == "__main__":
     tree = Tree()
+    tree.add_node("Ash", "ash")
+    tree.add_node("Pikachu", "pikachu", "Ash")
     tree.add_node("Bruno", "bruno")
+    tree.add_node("Erika", "erika")
     tree.add_node("Harry", "harry")  # root node
     tree.add_node("Jane", "jane", "Harry")
     tree.add_node("Bill", "bill", "Harry")
@@ -148,8 +174,10 @@ if __name__ == "__main__":
     tree.add_node("Mary", "mary", "Diane")
     tree.add_node("Jill", "jill", "George")
     tree.add_node("Carol", "carol", "Jill")
-    tree.add_node("Carol", "carol", "Bruno")
+    tree.add_node("Carol", "carol", ["Bruno", "Erika"])
     tree.add_node("Grace", "grace", "Bill")
     tree.add_node("Mark", "mark", "Jane")
 
     tree.show_recursive()
+    print tree.get_roots_of_nodes("Carol")
+    print tree.get_roots_of_nodes(["Carol", "Bill", "Pikachu"])
