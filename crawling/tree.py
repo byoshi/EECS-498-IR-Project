@@ -1,6 +1,7 @@
 #tree implementation by Brett Kromkamp (via stackoverflow)
 
 import uuid
+from collections import deque
 
 def sanitize_id(id):
     return id.strip().replace(" ", "")
@@ -9,44 +10,44 @@ def sanitize_id(id):
 (_ROOT, _DEPTH, _WIDTH) = range(3)
 
 class Node:
+    def __init__(self, value, parents, degree):
+        if type(parents) is not list:
+            p_l = [parents]
+            self.parents = p_l
+        else:
+            self.parents = parents
+        self.children = []
+        self.value = value
+        self.degree = degree
 
-    def __init__(self, name, identifier=None, expanded=True):
-        self.__identifier = (str(uuid.uuid1()) if identifier is None else
-                sanitize_id(str(identifier)))
-        self.name = name
-        self.expanded = expanded
-        self.__bpointer = None
-        self.__fpointer = []
+    def add_parents(self, parents):
+        if type(parents) is not list:
+            self.parents.append(parents)
+        else:
+            self.parents.extend(parents)
 
-    @property
-    def identifier(self):
-        return self.__identifier
+    def add_child(self, node_id):
+        self.children.append(node_id)
 
-    @property
-    def bpointer(self):
-        return self.__bpointer
+    def get_props(self):
+        return self.parents, self.children, self.value, self.degree
 
-    @bpointer.setter
-    def bpointer(self, value):
-        if value is not None:
-            self.__bpointer = sanitize_id(value)
+    def get_parents(self):
+        return self.parents
 
-    @property
-    def fpointer(self):
-        return self.__fpointer
+    def get_children(self):
+        return self.children
 
-    def update_fpointer(self, identifier, mode=_ADD):
-        if mode is _ADD:
-            self.__fpointer.append(sanitize_id(identifier))
-        elif mode is _DELETE:
-            self.__fpointer.remove(sanitize_id(identifier))
-        elif mode is _INSERT:
-            self.__fpointer = [sanitize_id(identifier)]
+    def get_value(self):
+        return self.value
+
+    def get_degree(self):
+        return self.degree
 
 class Tree:
-
     def __init__(self):
-        self.nodes = []
+        self.nodes = {}
+        self.roots = {}
 
     def get_index(self, position):
         for index, node in enumerate(self.nodes):
@@ -54,80 +55,70 @@ class Tree:
                 break
         return index
 
-    def create_node(self, name, identifier=None, parent=None):
+    def add_node(self, key, value, parents=None, degree=0):
+        if parents is None:
+            degree = 0
+        else:
+            if type(parents) is not list:
+                degree = self.nodes[parents].get_degree() + 1
+            else:
+                max_deg = 0;
+                for p in parents:
+                    if self.nodes[p].get_degree() > max_deg:
+                        max_deg = p.get_degree()
+                degree = max_deg + 1
 
-        node = Node(name, identifier)
-        self.nodes.append(node)
-        self.__update_fpointer(parent, node.identifier, _ADD)
-        node.bpointer = parent
+        node = Node(value, parents, degree)
+        self.nodes[key] = node
+
+        if parents is None:
+            self.roots[key] = node
+        else:
+            for p in node.get_parents():
+                self.nodes[p].add_child(key)
+
         return node
 
-    def show(self, position, level=_ROOT):
-        queue = self[position].fpointer
-        if level == _ROOT:
-            print("{0} [{1}]".format(self[position].name, self[position].identifier))
-        else:
-            print("\t"*level, "{0} [{1}]".format(self[position].name, self[position].identifier))
-        if self[position].expanded:
-            level += 1
-            for element in queue:
-                self.show(element, level)  # recursive call
+    def get_roots(self):
+        return self.roots
 
-    def expand_tree(self, position, mode=_DEPTH):
-        # Python generator. Loosly based on an algorithm from 'Essential LISP' by
-        # John R. Anderson, Albert T. Corbett, and Brian J. Reiser, page 239-241
-        yield position
-        queue = self[position].fpointer
-        while queue:
-            yield queue[0]
-            expansion = self[queue[0]].fpointer
-            if mode is _DEPTH:
-                queue = expansion + queue[1:]  # depth-first
-            elif mode is _WIDTH:
-                queue = queue[1:] + expansion  # width-first
+    def get_node(self, key):
+        return self.nodes[key]
 
-    def is_branch(self, position):
-        return self[position].fpointer
+    def show(self):
+        d = deque()
+        for ri in self.get_roots():
+            d.append(ri)
 
-    def __update_fpointer(self, position, identifier, mode):
-        if position is None:
-            return
-        else:
-            self[position].update_fpointer(identifier, mode)
-
-    def __update_bpointer(self, position, identifier):
-        self[position].bpointer = identifier
+        while len(d) > 0:
+            ni = d.popleft()
+            node = self.get_node(ni)
+            print "\t"*node.get_degree(), node.value
+            for ci in node.get_children():
+                d.append(ci)
 
     def __getitem__(self, key):
-        return self.nodes[self.get_index(key)]
-
-    def __setitem__(self, key, item):
-        self.nodes[self.get_index(key)] = item
+        return self.nodes[key]
 
     def __len__(self):
         return len(self.nodes)
 
-    def __contains__(self, identifier):
-        return [node.identifier for node in self.nodes if node.identifier is identifier]
+    def __contains__(self, key):
+        return key in self.nodes
 
 if __name__ == "__main__":
 
     tree = Tree()
-    tree.create_node("Harry", "harry")  # root node
-    tree.create_node("Jane", "jane", parent = "harry")
-    tree.create_node("Bill", "bill", parent = "harry")
-    tree.create_node("Joe", "joe", parent = "jane")
-    tree.create_node("Diane", "diane", parent = "jane")
-    tree.create_node("George", "george", parent = "diane")
-    tree.create_node("Mary", "mary", parent = "diane")
-    tree.create_node("Jill", "jill", parent = "george")
-    tree.create_node("Carol", "carol", parent = "jill")
-    tree.create_node("Grace", "grace", parent = "bill")
-    tree.create_node("Mark", "mark", parent = "jane")
+    tree.add_node("Harry", "harry")  # root node
+    tree.add_node("Jane", "jane", "Harry")
+    tree.add_node("Bill", "bill", "Harry")
+    tree.add_node("Joe", "joe", "Jane")
+    tree.add_node("Diane", "diane", "Jane")
+    tree.add_node("George", "george", "Diane")
+    tree.add_node("Mary", "mary", "Diane")
+    tree.add_node("Jill", "jill", "George")
+    tree.add_node("Carol", "carol", "Jill")
+    tree.add_node("Grace", "grace", "Bill")
+    tree.add_node("Mark", "mark", "Jane")
 
-    print("="*80)
-    tree.show("harry")
-    print("="*80)
-    for node in tree.expand_tree("harry", mode=_WIDTH):
-        print(node)
-    print("="*80)
+    tree.show()
