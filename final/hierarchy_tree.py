@@ -160,9 +160,15 @@ def make_tree(clusterid):
     jsonfile = open("tree.json", "w")
     jsonfile.write(tree.json() + "\n")
     jsonfile.close()
+    return tree.get_roots().keys()
 
 
 if __name__ == '__main__':
-    make_tree(0)
-    # make_tree(1)
-    # make_tree(2)
+    k = 10;
+    root_f = open("roots", "w")
+    for i in xrange(k):
+        roots = make_tree(i)
+        for r in roots:
+            root_f.write(str(r) + " ")
+        root_f.write("\n")
+
