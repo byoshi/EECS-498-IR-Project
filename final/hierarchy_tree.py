@@ -94,7 +94,7 @@ def build_tree(rankings, articles, links, rankings_by_index):
     return tree
 
 
-def make_tree(clusterid):
+def make_tree(clusterid, save=False):
     articles_path = 'article_names.txt'
     articles_file = open(articles_path, 'r')
     articles = articles_file.read().strip().split("\n")
@@ -157,9 +157,10 @@ def make_tree(clusterid):
 
     print '========== Tree ==========='
     tree.show_recursive()
-    jsonfile = open("tree.json", "w")
-    jsonfile.write(tree.json() + "\n")
-    jsonfile.close()
+    if save:
+        jsonfile = open("tree.json", "w")
+        jsonfile.write(tree.json() + "\n")
+        jsonfile.close()
     return tree.get_roots().keys()
 
 
@@ -167,7 +168,10 @@ if __name__ == '__main__':
     k = 10;
     root_f = open("roots", "w")
     for i in xrange(k):
-        roots = make_tree(i)
+        save = False
+        if i == 0:
+            save = True
+        roots = make_tree(i, save)
         for r in roots:
             root_f.write(str(r) + " ")
         root_f.write("\n")
