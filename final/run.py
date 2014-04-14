@@ -97,10 +97,6 @@ if __name__ == "__main__":
         clusters_file.write(str(cluster) + '\n')
     clusters_file.close()
 
-    article_names = 'articles'
-    names_file = open(article_names)
-    names = names_file.read().split('\n')
-
     for i in xrange(k):
         print "============== CLUSTER: ", i, "============="
         for j in np.where(c == i)[0]:
