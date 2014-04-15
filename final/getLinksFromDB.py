@@ -157,7 +157,8 @@ def crawl():
        
                 # links come in alphabetical order need to shuffle here
                 shuffle(links)
-                for l in links:#[:10]:
+                num_links = int(min(100, max(0.3*len(links), 10)))
+                for l in links[:num_links]:
                     q.append((l, page_nodes_idx, degree + 1))
 
         end = time.time()
