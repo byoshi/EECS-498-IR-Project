@@ -169,7 +169,7 @@ if __name__ == '__main__':
     root_f = open("roots", "w")
     for i in xrange(k):
         save = False
-        if i == 0:
+        if i == 6:
             save = True
         roots = make_tree(i, save)
         for r in roots:
