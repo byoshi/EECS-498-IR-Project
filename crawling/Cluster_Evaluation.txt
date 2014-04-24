@@ -1,0 +1,381 @@
+
+======================= Evaluation 1 ===========================
+
+Total # docs = 438
+Number of accurate docs = 316
+Purity = 72.146%
+Entropy: 2.6723
+
+====Cluster 0===    184-63 = 121
+Xi’an_Incident
+Reconnaissance_aircraft
+Close_combat
+Kuomintang
+Clement_Attlee
+History_of_the_world
+Romania
+Dutch_East_Indies
+Hirohito_and_the_Making_of_Modern_Japan
+Manchukuo
+United_Kingdom_general_election,_1945
+William_E._Watson
+Civilian
+Battle_of_Rehe
+Gino_Cervi
+Treviso
+Bari
+Tarnhelm
+Cardinal_Secretary_of_State
+Francesco_Pacelli
+Eva_Bartok
+Commando
+Andreas_Hillgruber
+War_rape
+Quit_India_Movement
+Cholera
+Total_War
+United_Kingdom
+Empire_of_Japan
+Spartacus_Educational
+Deposition_(politics)
+Konstantin_Päts
+Sino-Soviet_conflict_(1929)
+Caretaker_government
+Country_code_top-level_domain
+Andreas_Vesalius
+Institute_of_Education_Sciences
+Leo_Baekeland
+List_of_sovereign_states_and_dependent_territories_by_population_density
+Afghanistan
+List_of_current_constituent_monarchs
+Montenegro
+Romanian_Armed_Forces
+United_States
+Republic_of_Ireland
+Compulsory_voting
+Euthanasia
+Laos
+Universal_suffrage
+University_of_St_Andrews
+List_of_countries_by_GDP_(nominal)
+Schlieffen_Plan
+Senghor_University
+New_Brunswick
+Daylight_saving_time
+Afterlife
+Nobel_Prize_in_Chemistry
+Norwegian_Armed_Forces
+Netherlands
+European_Court_of_Human_Rights
+Laïcité
+Trappist_beer
+Open_economy
+
+====Cluster 1===    (17-10) = 7
+The_Historical_Journal
+JSTOR
+Borneo_campaign_(1945)
+Government_in_exile
+Northern_Europe
+
+Philippine_resistance_against_Japan
+Second_Philippine_Republic
+
+Danish_resistance_movement
+Denmark
+Danish_Defence
+
+====Cluster 2===    10-5 = 5
+Battle_of_the_River_Plate
+Battle_of_Moscow
+Aggravation_of_class_struggle_under_socialism
+Russian_locomotive_class_IS
+Batumi_Stalin_Museum
+
+====Cluster 3===    14-5 = 9
+Crimean_Offensive
+Cognac
+Nazi_belt_buckle_pistol
+List_of_foreign_vehicles_used_by_Nazi_Germany_in_World_War_II
+Siege_of_Sevastopol_(1941–42)
+
+
+====Cluster 4===    31-6 = 25
+Allies_of_World_War_II
+Axis_leaders_of_World_War_II
+Commanders_of_World_War_II
+Rhine
+Military_history_of_Bulgaria_during_World_War_II
+Axis_powers
+
+====Cluster 5===    18-6 = 12
+Battle_of_Hürtgen_Forest
+Sovkhoz
+Zangger_Committee
+Portugal
+Monarchies_in_Africa
+Bhutan
+
+====Cluster 6===    72-10 = 62
+European_theatre_of_World_War_II
+Resistance_movement
+Resistance_during_World_War_II
+Pursuit_of_Nazi_collaborators
+List_of_World_War_II_conferences
+Central_Asia
+Ili_Rebellion
+Kingdom_of_the_Netherlands
+ISO_4217
+Timeline_of_World_War_II_(1945)
+
+====Cluster 7===    31-5 = 26
+Oro_Province
+De_jure
+Seventeen_Provinces
+Southern_Netherlands
+John_Fitzmaurice
+
+====Cluster 8===    41-3 = 38
+Collective_responsibility
+Timeline_of_events_preceding_World_War_II
+Timeline_of_World_War_II_(1939)
+
+====Cluster 9===    20-10 = 10
+Nagasaki
+Pozzolana
+Korean_Liberation_Army
+Ruth_Beckermann
+Cathedral_of_Christ_the_Saviour
+South_Korea
+Andorra
+International_Institute_for_Democracy_and_Electoral_Assistance
+Uruguay
+Loyola_University_New_Orleans
+
+
+
+======================= Evaluation 2 ========================
+
+Total # docs = 438
+Number of accurate docs = 349
+Purity: 79.68%
+Entropy: 2.96
+
+===Cluster 0=== 128 - 31
+Weidenfeld_&amp;_Nicolson
+The_Second_World_War_(book_series)
+Close_combat
+Ballantine_Books
+Clement_Attlee
+El_Salvador_during_World_War_II
+Vatican_City_in_World_War_II
+Osprey_Publishing
+Treviso
+Bari
+Eva_Bartok
+Military_history_of_Mexico
+Resistance_movement
+Quit_India_Movement
+Pozzolana
+Trinitrotoluene
+Chetniks
+Total_war
+Latin_America_during_World_War_II
+Post–World_War_II_baby_boom
+History_of_the_Second_World_War
+Comecon
+Konstantin_Päts
+Sovkhoz
+Danish_resistance_movement
+Andreas_Vesalius
+Dutch_language
+Leo_Baekeland
+Danish_Defence
+Solvay_process
+Trappist_beer
+
+===Cluster 1=== 11 - 6 = 5
+Superpower
+JSTOR
+Ghana
+International_Institute_for_Democracy_and_Electoral_Assistance
+John_Fitzmaurice
+
+
+===Cluster 2=== (Soviet) 29 - 5 = 24
+List_of_Nazi-era_ghettos
+Ghetto_uprising
+Resistance_during_World_War_II
+List_of_World_War_II_conferences
+Timeline_of_World_War_II_(1945)
+
+===Cluster 3=== (Military History, Ships, Air, Battles) 59 - 15
+European_theatre_of_World_War_II
+Mediterranean_and_Middle_East_theatre_of_World_War_II
+Greek_Resistance
+Civitella_in_Val_di_Chiana
+Kenya_Colony_in_World_War_II
+Allied-occupied_Germany
+Drancy_internment_camp
+Timeline_of_the_Manhattan_Project
+European-African-Middle_Eastern_Campaign_Medal
+Axis_powers
+Kingdom_of_the_Netherlands
+Country_code_top-level_domain
+Solvay_Institute_of_Sociology
+Schlieffen_Plan
+Nobel_Prize_in_Chemistry
+
+===Cluster 4=== (Italian) 30 - 5 = 25
+Laurence_Rees
+BBC
+Lance_Armstrong
+Soulwax
+Robert_Katz
+
+===Cluster 5=== (Eastern Europe) 60 - 5 = 55
+Army_Group_South
+Einsatzgruppen
+Jewish_partisans
+ISO_4217
+Turkish_Straits_crisis
+
+===Cluster 6=== (Belgium, Netherlands) 34 - 5 = 29
+Oberkommando_der_Wehrmacht
+Franz_Halder
+Commando
+List_of_Allied_propaganda_films_of_World_War_II
+Arthur_Frederick_Crane_Nicholls
+
+===Cluster 7=== (Press, education, law) 17 - 1 = 16
+Ernest_Solvay
+
+===Cluster 8=== (Asia) 57 - 13
+World_War_II
+Outline_of_World_War_II
+Aftermath_of_World_War_II
+History_of_the_world
+Allies_of_World_War_II
+Causes_of_World_War_II
+Home_front_during_World_War_II
+Commanders_of_World_War_II
+World_War_II_cryptography
+International_Military_Tribunal_for_the_Far_East
+Allied_war_crimes_during_World_War_II
+Zangger_Committee
+World_War_II_in_popular_culture
+
+===Cluster 9=== (Weapons, Concentration camps) 13 - 3 = 10
+Crimean_Offensive
+Cognac
+Siege_of_Sevastopol_(1941–42)
+
+
+
+
+======================= Evaluation 3 ========================
+Total # docs = 438
+Number of accurate docs = 358
+Purity: 84.018%
+Entropy: 2.72
+
+===Cluster 0=== (Belgium, Netherlands, Music, Chocolate) 84 - 20 = 64
+Nazism
+Rhine
+United_Kingdom_general_election,_1945
+Oberkommando_der_Wehrmacht
+Military_history_of_Mexico
+Standartenführer
+Czech_resistance_to_Nazi_occupation
+Des_Teufels_General
+Cholera
+Chetniks
+The_World_at_War
+Cathedral_of_Christ_the_Saviour
+Caretaker_government
+Compulsory_voting
+Congress_Column
+Universal_suffrage
+Schlieffen_Plan
+Uruguay
+Trappist_beer
+Events_preceding_World_War_II_in_Asia
+
+===Cluster 1===  159 - 13 = 146
+Civilian
+John_Keegan
+Benito_Mussolini
+Karl_Hass
+Andreas_Hillgruber
+Military_history_of_Bulgaria_during_World_War_II
+Military_history_of_South_Africa_during_World_War_II
+Military_history_of_Latvia_during_World_War_II
+Latin_America_during_World_War_II
+List_of_Allied_propaganda_films_of_World_War_II
+Government_in_exile
+Zangger_Committee
+Daylight_saving_time
+
+===Cluster 2=== (Countries, Lithuania) 52 - 10 = 42
+Commando
+Military_production_during_World_War_II
+Post–World_War_II_baby_boom
+De_jure
+Romanian_Armed_Forces
+International_Institute_for_Democracy_and_Electoral_Assistance
+Vocal_music
+Open_economy
+Slovene_Partisans
+Laïcité
+
+===Cluster 3=== (Misc cluster) 18 - 10 = 8
+Philippine_resistance_against_Japan
+Blitzkrieg
+Second_Philippine_Republic
+Latvian_Central_Council
+Danish_resistance_movement
+Denmark
+Danish_Defence
+Northern_Europe
+Latvian_anti-Nazi_resistance_movement_1941–45
+Philippine_resistance_against_Japan
+
+===Cluster 4=== (Battles, Campaigns) 50 - 5 = 45
+Hedgehog_(weapon)
+Armistice_of_Cassibile
+Cuba_during_World_War_II
+Country_code_top-level_domain
+ISO_4217
+
+===Cluster 5=== (Concentration Camps) 22 - 4 = 18
+ENIAC
+Cognac
+Battle_of_Smolensk_(1943)
+Battle_of_Kursk
+
+===Cluster 6=== (Politics) 12 - 7 = 5
+The_Second_World_War_(book_series)
+El_Salvador_during_World_War_II
+Treviso
+German_Resistance_to_Nazism
+Franz_Halder
+Afterlife
+Tosk_Albanian
+
+===Cluster 7=== (AIR) 12 - 6 = 6
+Mid-Atlantic_gap
+SS-Verfügungstruppe
+Euthanasia
+Timeline_of_the_Manhattan_Project
+Timeline_of_World_War_II_(1940)
+Timeline_of_World_War_II_(1939)
+
+===Cluster 8=== (Chemistry, Medals) 12 - 2 = 10
+Aggravation_of_class_struggle_under_socialism
+Russian_locomotive_class_IS
+
+===Cluster 9=== (Media) 17 - 3 = 14
+Battle_of_Kohima
+The_Destruction_of_the_European_Jews
+Nobel_Prize_in_Chemistry
+
